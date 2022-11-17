@@ -1,6 +1,6 @@
 import scala.util.Try
 
-class GameOfLife6 extends munit.FunSuite {
+class GameOfLife7 extends munit.FunSuite {
   // rules
   // alive => < 2 => dead
   // alive =>  2 || 3  => alive
@@ -97,6 +97,16 @@ class GameOfLife6 extends munit.FunSuite {
     assertEquals(obtained, expected)
   }
 
+  test("[[D, A, D][D, A, D][A, A, A]] matrix should become [[D, D, D][D, A, D][D, A, D] after 2 iteration") {
+    val dead = DeadCell()
+    val alive = AliveCell()
+    val matrix = Matrix(Seq(Seq(dead, alive, dead), Seq(dead, alive, dead), Seq(alive, alive, alive)))
+    val iteration1 = computeNextMatrix(matrix)
+    val obtained = computeNextMatrix(iteration1)
+    val expected = Matrix(Seq(Seq(dead, dead, dead), Seq(dead, alive, dead), Seq(dead, alive, dead)))
+    assertEquals(obtained, expected)
+  }
+
   def computeNextMatrix(matrix: Matrix): Matrix ={
     Matrix(computeAliveNeighbours(matrix).map(c => c.map(cell => {
       cellFactory(cell.cell.computeNextCellState(cell.value))
@@ -136,7 +146,7 @@ class GameOfLife6 extends munit.FunSuite {
 
   case class CellWithPosition(cell: Cell, position: Position) {}
 
-  trait Cell(state: State) {
+  sealed trait Cell(state: State) {
     def computeNextCellState(neighbours: Int): State
   }
   case class DeadCell() extends Cell(DEAD){
